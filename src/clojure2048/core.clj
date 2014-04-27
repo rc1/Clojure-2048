@@ -12,7 +12,7 @@
 
 (defn make-tile
   "Creates a tile with a :value and a unqiue :id. Values are [1 2 3 4] not [2 4 8 16]
-   likes the game as this is left for a renderer"
+   like the original game. The x*x this is left for the renderer"
   [] (hash-map :value 0 :id (next-tile-id)))
 
 (defn make-empty-board
@@ -29,7 +29,7 @@
 
 ;; # Adding Values
 (defn indices-with-zero-value
-  "Return the indices where tiles on the board have a zero value "
+  "Return the indices where tiles on the board have a zero value"
   [board]
   (reduce
     (fn [acc [idx tile]]
