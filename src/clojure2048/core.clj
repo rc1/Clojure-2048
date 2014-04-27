@@ -16,7 +16,7 @@
   [] (hash-map :value 0 :id (next-tile-id)))
 
 (defn make-empty-board
-  "Creates a new board where all values are 0 and tiles are unqiue"
+  "Creates a new board where all values are 0 and tiles have unique id for rendering"
   []
   (vec (for [_ (range 0 16)] (make-tile))))
 
@@ -29,7 +29,7 @@
 
 ;; # Adding Values
 (defn indices-with-zero-value
-  "Return the indices where the boards value is zero"
+  "Return the indices where tiles on the board have a zero value "
   [board]
   (reduce
     (fn [acc [idx tile]]
@@ -48,13 +48,12 @@
      (assoc-in board [(rand-nth zero-indices) :value] (rand-nth (config :new-values))))))
 
 ;; # Moving Mergeing Cells
-;; ## High level pass routine
+;; ## Highest level merge steps abstraction, passes
 (defn create-passes []
-  "returns a pattern like [0 1 2 0 1 0] for a size of 4"
+  "Returns a pattern like [0 1 2 0 1 0] for a size of 4"
   (vec (flatten (reverse (for [x (range 1 (config :size))] (range 0 x))))))
 
-;; ## Step Creation Strategies 
-;; Strategy for making each step based on the direction for the move/merge
+;; ## Lowest level merge steps abstraction. Strategies for making each step based on the direction for the move/merge
 (def steps-reduce-fns 
   { :up (fn [steps pass]
           (let [size (config :size)
@@ -80,7 +79,7 @@
 
 ;; ## Step Creation
 (defn create-steps 
-  ;; Returns the steps need to merge/move cells based on a direction
+  ;; Returns the a vector of steps. Each step is a vector contains 2 indices of board tiles to be merged
   [direction]
   (reduce (steps-reduce-fns  direction) [] (create-passes)))
 
@@ -118,7 +117,7 @@
   
 ;; # Game Sequencing
 (defn do-turn 
-  "Makes a move based on the direction. Returns the board or nil if the game is over"
+  "Makes a move based on the direction and returns the board."
   [direction]
   (swap! 
     current-board
@@ -131,15 +130,17 @@
 ;; # Debug / Repl
 
 (defn print-board-values
-  "Draws the board in REPL and returns it"
+  "Draws the board pretty in REPL"
   [board]
   (print (flatten (interpose "\n" (partition 4 (map :value board))))))
 
 (defn do-turn-dev [direction] 
-  "Makes a turn and prints the boards values to the repl" 
+  "Makes a turn  based on the direction. The prints the values to the repl" 
   (do-turn direction)
   (print-board-values @current-board))
 
+
+;; Repl triggers to play game
 (reset-current-board)
 (do-turn-dev :up)
 (do-turn-dev :down)
