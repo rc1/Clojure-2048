@@ -12,7 +12,7 @@
 
 (defn make-tile
   "Creates a tile with a :value and a unqiue :id. Values are [1 2 3 4] not [2 4 8 16]
-   like the original game. The x*x this is left for the renderer"
+   like the original game. The x*x is left for the renderer"
   [] (hash-map :value 0 :id (next-tile-id)))
 
 (defn make-empty-board
